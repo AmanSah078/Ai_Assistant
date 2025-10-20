@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aman AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.chat-container {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.ai-message {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 15px 20px;
+    border-radius: 18px;
+    position: relative;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border-bottom-right-radius: 5px;
+}
+
+.ai-message .message-content {
+    background: white;
+    color: #333;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sender {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    opacity: 0.8;
+}
+
+.user-message .sender {
+    text-align: right;
+}
+
+.time {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-top: 5px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    font-size: 1.2rem;
+}
+
+.user-message .avatar {
+    background: #10b981;
+    order: -1;
+}
+
+.ai-message .avatar {
+    background: #ef4444;
+}
+
+.typing-indicator {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 10px;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #64748b;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+.input-container {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#userInput {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#userInput:focus {
+    border-color: #4f46e5;
+}
+
+#sendButton {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#sendButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+}
+
+.suggestions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.suggestion-tag {
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.suggestion-tag:hover {
+    background: #4f46e5;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Scrollbar Styling */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 15px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .message-content {
+        max-width: 85%;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-robot"></i> Java AI Assistant</h1>
+            <p>Your friendly chatbot powered by intelligence</p>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <div class="sender">AI Assistant</div>
+                        <div class="text">Namaste! 👋 I'm your Java AI Assistant. How can I help you today?</div>
+                        <div class="time" id="currentTime"></div>
+                    </div>
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>AI is typing...</span>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-group">
+                    <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+                    <button id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <span class="suggestion-tag" data-message="Hello">👋 Hello</span>
+                    <span class="suggestion-tag" data-message="How are you?">😊 How are you?</span>
+                    <span class="suggestion-tag" data-message="What is your name?">🤖 Your name</span>
+                    <span class="suggestion-tag" data-message="Tell me a joke">😂 Tell joke</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple AI Assistant Class
+class AIAssistant {
+    constructor() {
+       this.responses = {
+    'hello': [
+        "Hello! 👋 How can I help you today?",
+        "Hi there! What's on your mind?",
+        "Hey! Nice to see you! 😊",
+        "Hello! How are you doing?"
+    ],
+    'hi': [
+        "Hi! How can I assist you?",
+        "Hello there! What can I do for you?",
+        "Hey! Great to chat with you! 🌟"
+    ],
+    'how are you': [
+        "I'm doing great! Thanks for asking. What about you? 😊",
+        "I'm fine and working perfectly! How are you feeling?",
+        "I'm awesome! Ready to help you. How about you?",
+        "I'm good! Just excited to chat with you. How are you doing?"
+    ],
+    'what is your name': [
+        "I'm your Java AI Assistant! 🤖",
+        "You can call me JavaBot!",
+        "I'm an AI assistant created with web technologies!"
+    ],
+    'who are you': [
+        "I'm your friendly AI assistant built with JavaScript!",
+        "I'm a chatbot created to help and chat with you! 💫",
+        "I'm an artificial intelligence program for conversation!"
+    ],
+    'is seat available in your library': [
+        "Yes, right now 10 seats are available in our library! Would you like to book a seat?",
+        "We have 10 seats available currently. You can book one if you need!",
+        "Yes! There are 10 seats free in the library right now. Shall I help you with booking?"
+    ],
+    'library seat': [
+        "We have 10 seats available in the library. Would you like to reserve one?",
+        "Library seating: 10 seats are currently available for booking!",
+        "Yes, 10 seats are free! Do you want to book a library seat?"
+    ],
+    'book seat': [
+        "Great! I can help you book a library seat. Please provide your name and student ID.",
+        "Sure! Let's book a library seat for you. What's your name?",
+        "Booking initiated! I'll need your details to reserve a seat in the library."
+    ],
+    
+    'seat available': [
+        "Yes, 10 seats are currently available in the library!",
+        "We have 10 free seats right now in the library.",
+        "Library status: 10 seats available for use!"
+    ],
+   'Khelega free fire': [
+    "Jao, padhai kar lo. Exam aane wala hai!",
+],
+    'time': [
+        `Current time is: ${new Date().toLocaleTimeString()}`,
+        `It's ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} now`,
+        `The time is ${new Date().toLocaleTimeString()}`
+    ],
+    // ... rest of your responses
+};
+        this.initializeEventListeners();
+    }
+
+    initializeEventListeners() {
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const suggestions = document.querySelectorAll('.suggestion-tag');
+
+        // Send message on button click
+        sendButton.addEventListener('click', () => this.sendMessage());
+
+        // Send message on Enter key
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.sendMessage();
+            }
+        });
+
+        // Suggestion tags
+        suggestions.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const message = tag.getAttribute('data-message');
+                userInput.value = message;
+                this.sendMessage();
+            });
+        });
+    }
+
+    sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const message = userInput.value.trim();
+
+        if (message === '') return;
+
+        // Add user message to chat
+        this.addMessage('user', message);
+        userInput.value = '';
+
+        // Show typing indicator
+        this.showTypingIndicator();
+
+        // Simulate AI thinking and response
+        setTimeout(() => {
+            this.hideTypingIndicator();
+            const response = this.generateResponse(message);
+            this.addMessage('ai', response);
+        }, 1000 + Math.random() * 1000);
+    }
+
+    addMessage(sender, text) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        if (sender === 'user') {
+            messageDiv.innerHTML = `
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="message-content">
+                    <div class="sender">You</div>
+                    <div class="text">${text}</div>
+                    <div class="time">${time}</div>
+                </div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="sender">AI Assistant</div>
+                    <div class="text">${text}</div>
+                    <div class="time">${time}</div>
+                </div>
+                <div class="avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+            `;
+        }
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    generateResponse(input) {
+        const lowerInput = input.toLowerCase();
+        
+        // Check for matching patterns
+        for (const [key, responses] of Object.entries(this.responses)) {
+            if (lowerInput.includes(key)) {
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+
+        // Default response
+        const defaultResponses = this.responses.default;
+        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+
+    showTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.style.display = 'flex';
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.style.display = 'none';
+    }
+}
+
+// Initialize the AI Assistant when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new AIAssistant();
+    
+    // Focus on input field
+    document.getElementById('userInput').focus();
+});
+    </script>
+        
+ 
+</body>
+</html>
